@@ -1,1 +1,1 @@
-Hicham commmit for SD card integration.
+Commit for SD card integration.
