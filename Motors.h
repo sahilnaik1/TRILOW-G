@@ -1,9 +1,8 @@
 #include <HighPowerStepperDriver.h>
 #include <SD.h>
 #include <Encoder.h>
-
+#include <TimerOne.h>
 HighPowerStepperDriver RP, TED;
-
 
 
 
@@ -23,7 +22,7 @@ void openLoopDriveRP(Direction dir, float dist, float spd = 0.2, uint16_t microS
       }
     }
 
-    File myFile = SD.open("test124.txt", FILE_WRITE);
+    File myFile = SD.open("test130v2.txt", FILE_WRITE);
     float stepsPerInch = 508;
 
     unsigned long int numOfMicroSteps = stepsPerInch * dist * microStepsPerStep;
@@ -34,6 +33,8 @@ void openLoopDriveRP(Direction dir, float dist, float spd = 0.2, uint16_t microS
 
     digitalWrite(40, HIGH);
 
+
+    
     for (unsigned long int x = 0; x < numOfMicroSteps; x++)
     {
         RP.step();
@@ -46,22 +47,41 @@ void openLoopDriveRP(Direction dir, float dist, float spd = 0.2, uint16_t microS
 
 void openLoopDriveTED(Direction dir, float dist, float spd = 0.2, uint16_t microStepsPerStep = 32) //dist in inches, spd in inches/second
 {
+    File myFile = SD.open("test130v3.txt", FILE_WRITE);
     float stepsPerInch = 508;
 
-    unsigned long int numOfMicroSteps = stepsPerInch * dist * microStepsPerStep;
-    int microStepPeriod = 1000000 / (spd * stepsPerInch * microStepsPerStep);
+    unsigned long int numOfMicroSteps = stepsPerInch * dist * microStepsPerStep; // total steps to destination
+    int microStepPeriod = 1000000 / (spd * stepsPerInch * microStepsPerStep); // time between steps (i/s * steps/i * msteps/steps = s / msteps
 
     TED.setStepMode(microStepsPerStep);
     TED.setDirection(dir);
 
     digitalWrite(36, HIGH);
 
-    for (unsigned long int x = 0; x < numOfMicroSteps; x++)
-    {
+    uint16_t iterate = 0;
+    float t1 = micros();
+    float print_timer = micros();
+    while (iterate < numOfMicroSteps){
+
+      if (micros() >= print_timer + 1) {
+        myFile.print("RP: ");
+        myFile.println(millis());
+        print_timer = micros();
+      }
+      if (micros() >= t1 + float(microStepPeriod)){
         TED.step();
-        myFile.print("TED: ");
-        delayMicroseconds(microStepPeriod);
+        iterate +=1;
+        t1 = micros();
+      }
+
     }
+//
+//    for (unsigned long int x = 0; x < numOfMicroSteps; x++)
+//    {
+//        TED.step();
+//        myFile.print("TED: ");
+//        delayMicroseconds(microStepPeriod);
+//    }
 
     digitalWrite(36, LOW);
 }
