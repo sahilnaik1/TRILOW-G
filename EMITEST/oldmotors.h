@@ -2,6 +2,8 @@
 #include <HighPowerStepperDriver.h>
 //#include <Encoder.h>
 HighPowerStepperDriver RP, TED;
+#include <SparkFun_TB6612.h>
+
 
 const uint8_t ChipSelectRP = 41;
 const uint8_t ChipSelectTED = 37;
@@ -81,16 +83,16 @@ void initializeTED()
 //  END OF STEPPER CODE
 /////////////////////////////////////////////////////////////////////////
 
-const uint8_t IN1 = 30;
-const uint8_t IN2 = 29;
-const uint8_t PWM = 28;
+const uint8_t AIN1 = 30;
+const uint8_t AIN2 = 29;
+const uint8_t PWMA = 28;
 const uint8_t STBY = 32;
+const uint8_t offsetA = 1;
 
 const uint8_t EncA = 9;
 const uint8_t EncB = 8;
 
 //Encoder myEnc(EncA, EncB);
-Motor motor1 = Motor(AIN1, AIN2, PWMA, offsetA, STBY);
 
 void initializeTEDDCM()
 {
@@ -103,6 +105,8 @@ void initializeTEDDCM()
 //  digitalWrite(AIN2, LOW);
 //  digitalWrite(PWMA, HIGH);
 //  digitalWrite(STBY, HIGH);
+  Motor motor1 = Motor(AIN1, AIN2, PWMA, offsetA, STBY);
+
 }
 
 long oldPosition  = -999;
@@ -111,11 +115,11 @@ enum OffState : uint8_t
 {
   STOP, STANDBY
 };
-
-float readEncDeg()
-{
-  return myEnc.read() * 0.288;
-}
+//
+//float readEncDeg()
+//{
+//  return myEnc.read() * 0.288;
+//}
 
 void TEDDCM(Direction dir, double dist, short spd = 1.0, OffState os = STOP)
 {
@@ -150,6 +154,8 @@ void TEDDCM(Direction dir, double dist, short spd = 1.0, OffState os = STOP)
 //  analogWrite(PWM, 0);
 //
 //  if(os == STANDBY) digitalWrite(STBY, LOW);
+    Motor motor1 = Motor(AIN1, AIN2, PWMA, offsetA, STBY);
+
     motor1.drive(155,5000);
     motor1.brake();
 
