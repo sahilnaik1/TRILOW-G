@@ -14,9 +14,9 @@ void setup()
 
 void loop()
 {
-  openLoopDriveRP(DOWN,1 , 0.25, 64);
+  openLoopDriveRP(DOWN,0.5 , 0.25, 64);
   delay(500);
-  openLoopDriveRP(UP, 1, 2, 16);  
+  openLoopDriveRP(UP, 0.5, 2, 16);  
   delay(500);
 
 
